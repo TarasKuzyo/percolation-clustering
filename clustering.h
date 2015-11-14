@@ -22,7 +22,8 @@ typedef struct
 
 typedef struct __cl_list
 {
-    void         *cluster;
+    cluster *item;
+    struct __cl_list prev;
     struct __cl_list next;
 
 } cl_list;
