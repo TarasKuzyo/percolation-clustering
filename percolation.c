@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include "definitions.h"
+#include "clustering.h"
 
 
 grid grid_allocate(int width, int height)
@@ -78,5 +79,33 @@ int percolates(grid *gd)
     return 0;
 }
 
+
+cl_list* clusterization(grid *grd)
+{
+    cl_list *clusters = NULL; 
+    int k, have_open = 1;
+    
+    
+    for (k = 0; k < grd->width * grd->height; k++)
+    {
+        if (grd->cells[k] == SITE_OPEN)
+        {
+            int_list *cell = int_list_create_node(k);
+            cluster *parent = NULL;
+            parent = cluster_create(cell, k < grd->width, k >= (gd->height - 1) * gd->width);
+            
+            // get list of clusters that contain grd->cells[k]
+            // if lst == NULL clusters add parent
+            // else parent join each item in lst
+            // remove each item in lst
+            // add parent to lst
+        }
+            
+    }
+        
+   
+
+    return clusters;
+}
 
 

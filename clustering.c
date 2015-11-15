@@ -49,16 +49,16 @@ void int_list_free(int_list *current)
 
 /* ------------------------------------------------------- */
 
-cluster* cluster_create()
+cluster* cluster_create(int_list *node, int upper, int lower)
 {
     cluster *cl = malloc(sizeof(cluster));
     if (cl != NULL)
     {
-        cl->head = NULL;
-        cl->tail = NULL;
-        cl->size = 0;
-        cl->upper_boundary = 0;
-        cl->lower_boundary = 0;
+        cl->head = node;
+        cl->tail = node;
+        cl->size = 1;
+        cl->upper_boundary = upper;
+        cl->lower_boundary = lower;
     }    
     return cl;
 }
