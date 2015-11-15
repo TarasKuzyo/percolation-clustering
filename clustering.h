@@ -12,8 +12,8 @@ typedef struct __int_list
 
 typedef struct
 {
-    int_list *first;
-    int_list *last;
+    int_list *head;
+    int_list *tail;
     int size;
     int upper_boundary;
     int lower_boundary;
