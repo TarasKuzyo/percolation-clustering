@@ -34,9 +34,9 @@ int int_list_push_item(int_list **d, int item)
 }
 
 
-void int_list_free(int_list *d)
+void int_list_free(int_list *current)
 {
-    int_list *dd, *current = d;
+    int_list *dd;
 
     while (current != NULL)
     {
@@ -122,6 +122,17 @@ int cl_list_push_item(cl_list **d, cluster cl)
 }
 
 
+int cl_list_length(cl_list *current)
+{
+    while (current != NULL)
+    {
+        count += 1;
+        current = current->next;
+    }
+    return count;
+}
+
+
 
 int cl_list_remove_node(cl_list **d, cl_list *node)
 {
@@ -146,9 +157,9 @@ int cl_list_remove_node(cl_list **d, cl_list *node)
 }
 
 
-void cl_list_free(cl_list *d)
+void cl_list_free(cl_list *current)
 {
-    cl_list *dd, *current = d;
+    cl_list *dd;
 
     while (current != NULL)
     {
@@ -156,6 +167,12 @@ void cl_list_free(cl_list *d)
         current = current->next;
         free(dd);
     } 
+}
+
+
+void cl_list_sort(cl_list **d)
+{
+    
 }
 
 
