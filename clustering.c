@@ -49,6 +49,20 @@ void int_list_free(int_list *current)
 
 /* ------------------------------------------------------- */
 
+cluster* cluster_create()
+{
+    cluster *cl = malloc(sizeof(cluster));
+    if (cl != NULL)
+    {
+        cl->head = NULL;
+        cl->tail = NULL;
+        cl->size = 0;
+        cl->upper_boundary = 0;
+        cl->lower_boundary = 0;
+    }    
+    return cl;
+}
+
 
 int cluster_push(cluster *cl1, int_list *node)
 {
@@ -86,6 +100,13 @@ int cluster_join(cluster **cl1, cluster *cl2)
 }
 
 
+void cluster_free(cluster *cl)
+{
+    int_list_free(cl->first);
+    free(cl);
+}
+
+
 /* ------------------------------------------------------- */
 
 cl_list* cl_list_create_node(cluster item)
@@ -94,6 +115,7 @@ cl_list* cl_list_create_node(cluster item)
     if (node != NULL)
     {
         node->item = item;
+        node->prev = NULL;
         node->next = NULL;
     }
     
