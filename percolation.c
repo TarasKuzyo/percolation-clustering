@@ -3,7 +3,7 @@
 #include "clustering.h"
 
 
-grid grid_allocate(int width, int height)
+grid* grid_allocate(int width, int height)
 {
     int *cells = malloc(width * height * sizeof(int));
     if (cells == NULL)
@@ -32,7 +32,7 @@ void grid_free(grid *grd)
 
 
 /* returns a random number in range 0..1 */
-inline double random()
+inline double rand_num()
 {
     return (double)rand() / (double)RAND_MAX;
 }
@@ -46,7 +46,7 @@ void grid_create(grid *grd, double prob)
     
     for (i = 0; i < grd->height; i++)
         for (j = 0; j < grd->width; j++)
-             grd->cells[grd->width * i + j] = (random() < prob) ? SITE_OPEN : SITE_BLOCK;
+             grd->cells[grd->width * i + j] = (rand_num() < prob) ? SITE_OPEN : SITE_BLOCK;
     
 }
 
@@ -58,8 +58,8 @@ void start_flow(grid *grd)
     int j;
     
     for (j = 0; j < grd->width; j++)
-        if (gd->cells[j] == SITE_OPEN)
-            gd->cells[j] = SITE_FULL;
+        if (grd->cells[j] == SITE_OPEN)
+            grd->cells[j] = SITE_FULL;
 
 }
 
@@ -85,19 +85,19 @@ int percolates(grid *gd)
  */
 int check_neighborhood(grid *grd, int c1, int c2)
 {
-    int i = c1 / grid->width;
-    int j = c1 % grid->width;
+    int i = c1 / grd->width;
+    int j = c1 % grd->width;
     
-    if (i > 0 && (i - 1)*grid->width + j == c2)
+    if (i > 0 && (i - 1)*grd->width + j == c2)
         return 1;
         
-    if (j > 0 && i*grid->width + (j - 1) == c2)
+    if (j > 0 && i*grd->width + (j - 1) == c2)
         return 1;
 
-    if (i + 1 < grd->height && (i + 1)*grid->width + j == c2)
+    if (i + 1 < grd->height && (i + 1)*grd->width + j == c2)
         return 1;
     
-    if (j + 1 < grd->width  && i*grid->width + (j - 1) == c2)
+    if (j + 1 < grd->width  && i*grd->width + (j - 1) == c2)
         return 1;
     
     return 0;
@@ -117,7 +117,7 @@ cl_list* find_neighbors(cl_list *clusters, grid *grd, int k)
         {
             if (check_neighborhood(grd, k, list_head->item))
             {
-                cl_list_push_item(neighboring, current);
+                cl_list_push_node(&neighboring, current);
                 break;
             }
             list_head = list_head->next;
@@ -132,9 +132,10 @@ cl_list* find_neighbors(cl_list *clusters, grid *grd, int k)
 
 cl_list* clusterization(grid *grd)
 {
-    int_list *cell;
-    cluster *parent;
-    cl_list *clusters = NULL, *neighboring = NULL; 
+    int_list *cell = NULL;
+    cluster *parent = NULL;
+    cl_list *clusters = NULL;
+    cl_list *current = NULL, *neighboring = NULL; 
     
     int k, have_open = 1;
     
@@ -143,14 +144,14 @@ cl_list* clusterization(grid *grd)
         if (grd->cells[k] == SITE_OPEN)
         {
             cell = int_list_create_node(k);
-            parent = cluster_create(cell, k < grd->width, k >= (gd->height - 1) * gd->width);
+            parent = cluster_create(cell, k < grd->width, k >= (grd->height - 1) * grd->width);
             
             // get list of clusters that contain grd->cells[k]
             neighboring = find_neighbors(clusters, grd, k);
             // if lst == NULL clusters add parent
             if (neighboring == NULL)
             {
-                cl_list_push_item(clusters, parent);
+                cl_list_push_item(&clusters, parent);
             }
             // else parent join each item in lst
             else 
