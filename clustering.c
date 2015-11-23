@@ -155,7 +155,6 @@ int cl_list_length(cl_list *current)
 }
 
 
-
 int cl_list_remove_node(cl_list **d, cl_list *node)
 {
     if (node == NULL)

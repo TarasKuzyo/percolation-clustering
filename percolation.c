@@ -80,30 +80,99 @@ int percolates(grid *gd)
 }
 
 
+/* returns 1 if c1-th and c2-th cells are neighboring
+   in the grd structure
+ */
+int check_neighborhood(grid *grd, int c1, int c2)
+{
+    int i = c1 / grid->width;
+    int j = c1 % grid->width;
+    
+    if (i > 0 && (i - 1)*grid->width + j == c2)
+        return 1;
+        
+    if (j > 0 && i*grid->width + (j - 1) == c2)
+        return 1;
+
+    if (i + 1 < grd->height && (i + 1)*grid->width + j == c2)
+        return 1;
+    
+    if (j + 1 < grd->width  && i*grid->width + (j - 1) == c2)
+        return 1;
+    
+    return 0;
+}
+
+
+cl_list* find_neighbors(cl_list *clusters, grid *grd, int k)
+{
+    cl_list *current = clusters;
+    cl_list *neighboring = NULL; 
+    int_list  *list_head = NULL;
+    
+    while (current != NULL)
+    {
+        list_head = current->item->head;
+        while (list_head != NULL)
+        {
+            if (check_neighborhood(grd, k, list_head->item))
+            {
+                cl_list_push_item(neighboring, current);
+                break;
+            }
+            list_head = list_head->next;
+        }
+        
+        current = current->next;
+    }
+    
+    return neighboring;
+}
+
+
 cl_list* clusterization(grid *grd)
 {
-    cl_list *clusters = NULL; 
-    int k, have_open = 1;
+    int_list *cell;
+    cluster *parent;
+    cl_list *clusters = NULL, *neighboring = NULL; 
     
+    int k, have_open = 1;
     
     for (k = 0; k < grd->width * grd->height; k++)
     {
         if (grd->cells[k] == SITE_OPEN)
         {
-            int_list *cell = int_list_create_node(k);
-            cluster *parent = NULL;
+            cell = int_list_create_node(k);
             parent = cluster_create(cell, k < grd->width, k >= (gd->height - 1) * gd->width);
             
             // get list of clusters that contain grd->cells[k]
+            neighboring = find_neighbors(clusters, grd, k);
             // if lst == NULL clusters add parent
+            if (neighboring == NULL)
+            {
+                cl_list_push_item(clusters, parent);
+            }
             // else parent join each item in lst
-            // remove each item in lst
-            // add parent to lst
-        }
+            else 
+            {
+                cluster_join(&(neighboring->item), parent);
+                free(parent);
+                
+                // remove each item in lst
+                current = neighboring->next;
+                while (current != NULL)
+                {
+                    cluster_join(&(neighboring->item), current->item);
+                    free(current->item);
+                    current = current->next;
+                }
+            }
             
+            grd->cells[k] == SITE_FULL;
+        }
+    
     }
-        
-   
+
 
     return clusters;
 }
