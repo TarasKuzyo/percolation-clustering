@@ -1,4 +1,7 @@
+#include <stdio.h>
 #include <stdlib.h>
+#include "clustering.h"
+
 
 /* ------------------------------------------------------- */
 
@@ -63,23 +66,23 @@ cluster* cluster_create(int_list *node, int upper, int lower)
     return cl;
 }
 
-
-int cluster_push(cluster *cl1, int_list *node)
+/*
+int cluster_push(cluster *cl, int_list *node)
 {
-    int_list *head = cl1->head;
-    int res = int_list_push_node(&(cl1->head), node);
+    int_list *head = cl->head;
+    int res = int_list_push_node(&(cl->head), node);
     if (res)
     {    
         /* initilize a pointer to the tail node */
-        if (head == NULL)
+/*        if (head == NULL)
             cl->tail = cl->head;
         
-        cl1->size += 1;
-        cl1->upper_boundary |= ..;
-        cl1->lower_boundary |= ..;
+        cl->size += 1;
+        cl->upper_boundary |= ..;
+        cl->lower_boundary |= ..;
     }
     return res;
-}
+}*/
 
 
 /* append nodes from cl2 to the end of cl1 */
@@ -89,10 +92,10 @@ int cluster_join(cluster **cl1, cluster *cl2)
         *cl1 = cl2;
     else
     {
-        *cl1->tail->next = cl2->head;
-        *cl1->size += cl2->size;
-        *cl1->upper_boundary |= cl2->upper_boundary;
-        *cl1->lower_boundary |= cl2->lower_boundary;
+        (*cl1)->tail->next = cl2->head;
+        (*cl1)->size += cl2->size;
+        (*cl1)->upper_boundary |= cl2->upper_boundary;
+        (*cl1)->lower_boundary |= cl2->lower_boundary;
     }
     /* cl2 is no more responsible for its nodes */
     cl2->head = NULL;
@@ -102,14 +105,14 @@ int cluster_join(cluster **cl1, cluster *cl2)
 
 void cluster_free(cluster *cl)
 {
-    int_list_free(cl->first);
+    int_list_free(cl->head);
     free(cl);
 }
 
 
 /* ------------------------------------------------------- */
 
-cl_list* cl_list_create_node(cluster item)
+cl_list* cl_list_create_node(cluster *item)
 {
     cl_list *node = malloc(sizeof(cl_list));
     if (node != NULL)
@@ -126,10 +129,9 @@ cl_list* cl_list_create_node(cluster item)
 int cl_list_push_node(cl_list **d, cl_list *node)
 {
     if (*d != NULL)
-        *d->prev = node;
+        (*d)->prev = node;
         
     node->prev = NULL;
-    node->item = cl;
     node->next = *d;
 
     *d = node;
@@ -137,7 +139,7 @@ int cl_list_push_node(cl_list **d, cl_list *node)
 }
 
 
-int cl_list_push_item(cl_list **d, cluster cl)
+int cl_list_push_item(cl_list **d, cluster *cl)
 {
     cl_list *node = cl_list_create_node(cl);
     return cl_list_push_node(d, node);
@@ -146,6 +148,7 @@ int cl_list_push_item(cl_list **d, cluster cl)
 
 int cl_list_length(cl_list *current)
 {
+    int count = 0;
     while (current != NULL)
     {
         count += 1;
@@ -164,7 +167,7 @@ int cl_list_remove_node(cl_list **d, cl_list *node)
     {
         *d = node->next;
         if (*d != NULL) /* otherwise list is empty */
-            *d->prev = NULL;
+            (*d)->prev = NULL;
     }
     else
     {
@@ -188,6 +191,32 @@ void cl_list_free(cl_list *current)
         current = current->next;
         free(dd);
     } 
+}
+
+void cl_list_print(cl_list *current)
+{
+    int count = 0;
+    cluster *cl = NULL;
+    int_list *head = NULL;
+    
+    while (current != NULL)
+    {
+        cl = current->item;
+        head = cl->head;
+        
+        printf("cluster #%d\n:", count);
+        printf("size: %d\tupper: %d\tlower: %d\n", cl->size, cl->upper_boundary, cl->lower_boundary);
+        while (head != NULL)
+        {
+            printf("%d ", head->item);
+            head = head->next;
+        }
+        printf("\n\n");
+        
+        current = current->next;
+        count += 1;
+    }
+
 }
 
 

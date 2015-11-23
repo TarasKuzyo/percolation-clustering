@@ -5,7 +5,7 @@
 typedef struct __int_list
 {
     int item;
-    struct __int_list next;
+    struct __int_list *next;
 
 } int_list;
 
@@ -23,8 +23,8 @@ typedef struct
 typedef struct __cl_list
 {
     cluster *item;
-    struct __cl_list prev;
-    struct __cl_list next;
+    struct __cl_list *prev;
+    struct __cl_list *next;
 
 } cl_list;
 
