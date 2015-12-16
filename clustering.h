@@ -39,7 +39,7 @@ void      int_list_free(int_list *current);
 /* ------------------------------------------------------- */
 
 cluster* cluster_create(int_list *node, int upper, int lower);
-int      cluster_join(cluster **cl1, cluster *cl2);
+void     cluster_join(cluster **cl1, cluster *cl2);
 void     cluster_free(cluster *cl);
 
 /* ------------------------------------------------------- */

@@ -169,7 +169,7 @@ cl_list* clusterization(grid *grd)
                 }
             }
             
-            grd->cells[k] == SITE_FULL;
+            grd->cells[k] = SITE_FULL;
         }
     
     }

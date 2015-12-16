@@ -72,7 +72,7 @@ int cluster_push(cluster *cl, int_list *node)
     int_list *head = cl->head;
     int res = int_list_push_node(&(cl->head), node);
     if (res)
-    {    
+    {*/    
         /* initilize a pointer to the tail node */
 /*        if (head == NULL)
             cl->tail = cl->head;
@@ -86,7 +86,7 @@ int cluster_push(cluster *cl, int_list *node)
 
 
 /* append nodes from cl2 to the end of cl1 */
-int cluster_join(cluster **cl1, cluster *cl2)
+void cluster_join(cluster **cl1, cluster *cl2)
 {
     if (*cl1 == NULL)
         *cl1 = cl2;
