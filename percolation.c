@@ -51,18 +51,6 @@ void grid_create(grid *grd, double prob)
 }
 
 
-/* fills upper layer cells that are open 
- */
-void start_flow(grid *grd)
-{
-    int j;
-    
-    for (j = 0; j < grd->width; j++)
-        if (grd->cells[j] == SITE_OPEN)
-            grd->cells[j] = SITE_FULL;
-
-}
-
 
 /* checks if the grid structure percolates
    i.e., if any bottom layer cell is full 
@@ -134,15 +122,16 @@ cl_list* clusterization(grid *grd)
 {
     int_list *cell = NULL;
     cluster *parent = NULL;
-    cl_list *clusters = NULL;
     cl_list *current = NULL, *neighboring = NULL; 
+    cl_list *clusters = NULL;
     
-    int k, have_open = 1;
+    int k;
     
     for (k = 0; k < grd->width * grd->height; k++)
     {
         if (grd->cells[k] == SITE_OPEN)
         {
+            printf("%d\n", k);
             cell = int_list_create_node(k);
             parent = cluster_create(cell, k < grd->width, k >= (grd->height - 1) * grd->width);
             
@@ -176,6 +165,19 @@ cl_list* clusterization(grid *grd)
 
 
     return clusters;
+}
+
+
+/* generate random grid structure
+   with given site vacancy probability
+   and clusterize it
+ */
+cl_list* run_percolation(grid *grd, double prob)
+{
+    grid_create(grd, prob);
+    
+    return clusterization(grd);
+    
 }
 
 
