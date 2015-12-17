@@ -23,5 +23,4 @@ void grid_free(grid *grd);
 cl_list* clusterization(grid *grd);
 
 
-
 #endif /* __DEFINITIONS_H__ */

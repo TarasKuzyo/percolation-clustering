@@ -10,12 +10,23 @@ int main(int argc, char **argv)
     srand(time(NULL));
     clock_t beg, end;
 
-    grid *grd = grid_allocate(10, 10);
+    int size = 5;
+    grid *grd = grid_allocate(size, size);
 
     
     beg = clock();
+    grid_create(grd, 0.5);
     cl_list* clusters = clusterization(grd);
     end = clock();
+    
+    int i, j;
+    for (i = 0; i < size; i++)
+    {
+        for (j = 0; j < size; j++)
+            printf("%d", grd->cells[i * size + j]);
+        printf("\n");
+    }
+    cl_list_print(clusters);
     
     grid_free(grd);
     
