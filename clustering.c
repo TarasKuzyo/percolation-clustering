@@ -93,6 +93,7 @@ void cluster_join(cluster **cl1, cluster *cl2)
     else
     {
         (*cl1)->tail->next = cl2->head;
+        (*cl1)->tail = cl2->tail;
         (*cl1)->size += cl2->size;
         (*cl1)->upper_boundary |= cl2->upper_boundary;
         (*cl1)->lower_boundary |= cl2->lower_boundary;
@@ -130,7 +131,7 @@ int cl_list_push_node(cl_list **d, cl_list *node)
 {
     if (*d != NULL)
         (*d)->prev = node;
-        
+    
     node->prev = NULL;
     node->next = *d;
 
