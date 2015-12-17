@@ -86,21 +86,21 @@ int cluster_push(cluster *cl, int_list *node)
 
 
 /* append nodes from cl2 to the end of cl1 */
-void cluster_join(cluster **cl1, cluster *cl2)
+void cluster_join(cluster **cl1, cluster **cl2)
 {
     if (*cl1 == NULL)
-        *cl1 = cl2;
+        *cl1 = *cl2;
     else
     {
-        (*cl1)->tail->next = cl2->head;
-        (*cl1)->tail = cl2->tail;
-        (*cl1)->size += cl2->size;
-        (*cl1)->upper_boundary |= cl2->upper_boundary;
-        (*cl1)->lower_boundary |= cl2->lower_boundary;
+        (*cl1)->tail->next = (*cl2)->head;
+        (*cl1)->tail = (*cl2)->tail;
+        (*cl1)->size += (*cl2)->size;
+        (*cl1)->upper_boundary |= (*cl2)->upper_boundary;
+        (*cl1)->lower_boundary |= (*cl2)->lower_boundary;
     }
     /* cl2 is no more responsible for its nodes */
-    cl2->head = NULL;
-    cl2->tail = NULL;    
+    (*cl2)->head = NULL;
+    (*cl2)->tail = NULL;    
 }
 
 
@@ -129,6 +129,9 @@ cl_list* cl_list_create_node(cluster *item)
 
 int cl_list_push_node(cl_list **d, cl_list *node)
 {
+    if (node == NULL)
+        return 0;
+        
     if (*d != NULL)
         (*d)->prev = node;
     
@@ -177,7 +180,7 @@ int cl_list_remove_node(cl_list **d, cl_list *node)
             node->next->prev = node->prev;
     }
     
-    free(node);
+    //free(node);
     return 1;
 }
 
