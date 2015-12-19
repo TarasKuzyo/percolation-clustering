@@ -13,7 +13,6 @@ int main(int argc, char **argv)
     int size = 5;
     grid *grd = grid_allocate(size, size);
 
-    
     beg = clock();
     grid_create(grd, 0.5);
     cl_list* clusters = clusterization(grd);

@@ -20,6 +20,7 @@ typedef struct
 grid* grid_allocate(int width, int height);
 void grid_free(grid *grd);
 
+void grid_create(grid *grd, double prob);
 cl_list* clusterization(grid *grd);
 
 

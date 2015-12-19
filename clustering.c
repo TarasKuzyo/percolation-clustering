@@ -222,7 +222,6 @@ void cl_list_print(cl_list *current)
         printf("\n");
         
         current = current->next;
-        count += 1;
     }
 }
 
