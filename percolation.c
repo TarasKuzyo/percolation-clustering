@@ -73,45 +73,50 @@ int percolates(grid *gd)
  */
 int check_neighborhood(grid *grd, int c1, int c2)
 {
-    int i = c1 / grd->width;
-    int j = c1 % grd->width;
+    int i1 = c1 / grd->width;
+    int j1 = c1 % grd->width;
     
-    if (i > 0 && (i - 1)*grd->width + j == c2)
-        return 1;
-        
-    if (j > 0 && i*grd->width + (j - 1) == c2)
-        return 1;
-
-    if (i + 1 < grd->height && (i + 1)*grd->width + j == c2)
-        return 1;
+    int i2 = c2 / grd->width;
+    int j2 = c2 % grd->width;
     
-    if (j + 1 < grd->width  && i*grd->width + (j - 1) == c2)
+    if (i1 == i2 && (j1 == j2 + 1 || j1 == j2 - 1))
+        return 1;
+    if (j1 == j2 && (i1 == i2 + 1 || i1 == i2 - 1))
         return 1;
     
     return 0;
 }
 
 
-cl_list* find_neighbors(cl_list *clusters, grid *grd, int k)
+cl_list* find_neighbors(cl_list **clusters, grid *grd, int k)
 {
-    cl_list *current = clusters;
-    cl_list *neighboring = NULL; 
+    cl_list *current = *clusters;
+    cl_list *neighboring = NULL, *next = NULL; 
     int_list  *list_head = NULL;
+    int found;
     
     while (current != NULL)
     {
+        found = 0;
         list_head = current->item->head;
-        while (list_head != NULL)
+        while (list_head != NULL && !found)
         {
             if (check_neighborhood(grd, k, list_head->item))
             {
+                found = 1;
+                // following lines affect current list
+                // so save next poiter 
+                next = current->next;
+                cl_list_remove_node(clusters, current);
                 cl_list_push_node(&neighboring, current);
-                break;
+                current = next;
             }
             list_head = list_head->next;
         }
         
-        current = current->next;
+        if (!found)
+            current = current->next;
+        // else current is already modified
     }
     
     return neighboring;
@@ -122,7 +127,7 @@ cl_list* clusterization(grid *grd)
 {
     int_list *cell = NULL;
     cluster *parent = NULL;
-    cl_list *current = NULL, *neighboring = NULL; 
+    cl_list *current = NULL;
     cl_list *clusters = NULL;
     
     int k;
@@ -131,53 +136,28 @@ cl_list* clusterization(grid *grd)
     {
         if (grd->cells[k] == SITE_OPEN)
         {
-            printf("%d\n", k);
             cell = int_list_create_node(k);
             parent = cluster_create(cell, k < grd->width, k >= (grd->height - 1) * grd->width);
             
             // get list of clusters that contain grd->cells[k]
-            neighboring = find_neighbors(clusters, grd, k);
-            // if lst == NULL clusters add parent
-            if (neighboring == NULL)
+            current = find_neighbors(&clusters, grd, k);
+            while (current != NULL)
             {
-                cl_list_push_item(&clusters, parent);
-            }
-            // else parent join each item in lst
-            else 
-            {
-                cluster_join(&(neighboring->item), parent);
-                free(parent);
-                
-                // remove each item in lst
-                current = neighboring->next;
-                while (current != NULL)
-                {
-                    cluster_join(&(neighboring->item), current->item);
-                    free(current->item);
-                    current = current->next;
-                }
+                cluster_join(&parent, &(current->item));
+                free(current->item);
+                current = current->next;
             }
             
+            cl_list_push_item(&clusters, parent);
             grd->cells[k] = SITE_FULL;
+            
         }
-    
     }
-
+    
 
     return clusters;
 }
 
 
-/* generate random grid structure
-   with given site vacancy probability
-   and clusterize it
- */
-cl_list* run_percolation(grid *grd, double prob)
-{
-    grid_create(grd, prob);
-    
-    return clusterization(grd);
-    
-}
 
 
