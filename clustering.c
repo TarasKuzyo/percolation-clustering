@@ -111,6 +111,23 @@ void cluster_free(cluster *cl)
 }
 
 
+void cluster_print(cluster *cl)
+{
+    int_list *head = cl->head;
+    
+    printf("cluster\n");
+    printf("size: %d\tupper: %d\tlower: %d\n", cl->size, cl->upper_boundary, cl->lower_boundary);
+    while (head != NULL)
+    {
+        printf("%d ", head->item);
+        head = head->next;
+    }
+    printf("\n");
+
+}
+
+
+
 /* ------------------------------------------------------- */
 
 cl_list* cl_list_create_node(cluster *item)
@@ -199,28 +216,14 @@ void cl_list_free(cl_list *current)
 
 void cl_list_print(cl_list *current)
 {
-    int count = 0;
-    cluster *cl = NULL;
-    int_list *head = NULL;
-    
     while (current != NULL)
     {
-        cl = current->item;
-        head = cl->head;
-        
-        printf("cluster #%d\n:", count);
-        printf("size: %d\tupper: %d\tlower: %d\n", cl->size, cl->upper_boundary, cl->lower_boundary);
-        while (head != NULL)
-        {
-            printf("%d ", head->item);
-            head = head->next;
-        }
-        printf("\n\n");
+        cluster_print(current->item);
+        printf("\n");
         
         current = current->next;
         count += 1;
     }
-
 }
 
 
