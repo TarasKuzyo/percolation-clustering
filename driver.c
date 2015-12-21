@@ -10,11 +10,11 @@ int main(int argc, char **argv)
     srand(time(NULL));
     clock_t beg, end;
 
-    int size = 5;
+    int size = 50;
     grid *grd = grid_allocate(size, size);
 
     beg = clock();
-    grid_create(grd, 0.5);
+    grid_create(grd, 0.6);
     cl_list* clusters = clusterization(grd);
     end = clock();
     
@@ -26,6 +26,8 @@ int main(int argc, char **argv)
         printf("\n");
     }
     cl_list_print(clusters);
+    
+    create_image("img.png", 2000, grd, clusters);
     
     grid_free(grd);
     

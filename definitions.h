@@ -24,4 +24,7 @@ void grid_create(grid *grd, double prob);
 cl_list* clusterization(grid *grd);
 
 
+int create_image(const char *filename, double max_size, grid *grd, cl_list *clusters);
+
+
 #endif /* __DEFINITIONS_H__ */

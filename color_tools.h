@@ -6,8 +6,9 @@
 #define COLOR_PAD (0xffffff + 1)    
 
 
-#define SITE_BLOCK_COLOR 0x262626
-#define SITE_OPEN_COLOR  0xe6e6e6
+#define SITE_BLOCK_COLOR 0xffffff
+#define SITE_OPEN_COLOR  0xff0000
+#define SITE_FULL_COLOR  0x0000ff
 
 
 typedef struct {

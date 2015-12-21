@@ -5,6 +5,7 @@
 #include <cairo-svg.h> 
 
 #include "definitions.h"
+#include "clustering.h"
 #include "color_tools.h"
 
 
@@ -16,18 +17,22 @@ void draw_site(cairo_t *cr, double x, double y, double size, int site)
 {
     int color = generate_color(site % COLOR_PAD);
     rgb b_cl = hex_to_rgb(SITE_BLOCK_COLOR);
-    rgb f_cl = hex_to_rgb(color);
+    rgb o_cl = hex_to_rgb(SITE_OPEN_COLOR);
+    rgb f_cl = hex_to_rgb(SITE_FULL_COLOR);
     
     if (site == SITE_BLOCK)
         cairo_set_source_rgb(cr, b_cl.r, b_cl.g, b_cl.b);
-    else 
+    else if (site == SITE_OPEN)
+        cairo_set_source_rgb(cr, o_cl.r, o_cl.g, o_cl.b);
+    else if (site == SITE_FULL)
         cairo_set_source_rgb(cr, f_cl.r, f_cl.g, f_cl.b);
     
     cairo_rectangle(cr, x, y, size, size);
-    cairo_fill_preserve(cr);
+    cairo_fill(cr);
+    //cairo_fill_preserve(cr);
     
-    cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
-    cairo_stroke(cr);
+    //cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
+    //cairo_stroke(cr);
 }
 
 
@@ -40,7 +45,7 @@ int create_image(const char *filename, double max_size, grid *grd, cl_list *clus
     cl_list *current = clusters;
     int_list *head;
     int i, j;
-    int color, count = 0; 
+    int color, site, count = 0; 
     
     /* grid structure aspect ratio */
     double aspect = (double)grd->width / (double)grd->height;
@@ -93,15 +98,17 @@ int create_image(const char *filename, double max_size, grid *grd, cl_list *clus
     /* draw grid sites */
     while (current != NULL)
     {
-        color = generate_color(count);
+        color = generate_color(count + 1);
         head = current->item->head;
+        site = (current->item->upper_boundary && current->item->lower_boundary) ? SITE_FULL : SITE_OPEN;
+        
         while (head != NULL)
         {
             i = head->item / grd->width;
             j = head->item % grd->width;
             draw_site(cr, border_width + j * site_size,
                           border_width + i * site_size, 
-                          site_size, color);   
+                          site_size, site);   
             head = head->next;
         }
         
@@ -110,12 +117,12 @@ int create_image(const char *filename, double max_size, grid *grd, cl_list *clus
     }
     
     /* draw block sites */
-    for (i = 0; i < grd->height; i++)
-        for (j = 0; j < grd->width; j++)
-            if (grd->cells[i*grd->width + j] == SITE_BLOCK)
-                draw_site(cr, border_width + j * site_size,
-                              border_width + i * site_size, 
-                              site_size, grd->cells[i*grd->width + j]);          
+    //for (i = 0; i < grd->height; i++)
+    //    for (j = 0; j < grd->width; j++)
+    //        if (grd->cells[i*grd->width + j] == SITE_BLOCK)
+    //            draw_site(cr, border_width + j * site_size,
+    //                          border_width + i * site_size, 
+    //                          site_size, grd->cells[i*grd->width + j]);          
     
     if (strcmp(ext, "png") == 0)
         cairo_surface_write_to_png(surface, filename);
